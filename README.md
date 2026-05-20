@@ -15,23 +15,31 @@ This is a **skill** — an instruction set that any coding agent (Claude Code, C
 ### Prerequisites
 
 ```bash
-npm install -g @anthropic/cord-cli
+npm install -g cord-cli
 cord auth login
 ```
 
-### Add to your agent
+Or use without installing: `npx cord-cli auth login`
 
-Copy the contents of [`SKILL.md`](./SKILL.md) into your agent's instruction source:
+### Install the skill
+
+**Recommended — via the skills CLI:**
+
+```bash
+npx skills add pretzelai/cord-cloud-skill -y
+```
+
+This installs to your agent's skills directory (e.g. `.agents/skills/` for Cursor and OpenCode).
+
+**Manual — copy into your project:**
 
 | Agent | Where to put it |
 |-------|----------------|
-| Claude Code | `.claude/commands/cord-push-pull.md` or reference in `CLAUDE.md` |
-| Cursor | `.cursorrules` or a custom command |
-| Codex | `AGENTS.md` or instructions file |
-| Aider | `.aider.conf.yml` conventions or chat reference |
-| Any agent | Paste into system prompt or project instructions |
+| Cursor / OpenCode | `.agents/skills/cord-push-pull/SKILL.md` |
+| Claude Code | `.claude/skills/cord-push-pull/SKILL.md` |
+| Any agent | Reference the raw URL below in project instructions |
 
-Or point your agent to the raw URL:
+Raw skill URL:
 ```
 https://raw.githubusercontent.com/pretzelai/cord-cloud-skill/main/SKILL.md
 ```

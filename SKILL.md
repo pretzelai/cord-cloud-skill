@@ -1,3 +1,8 @@
+---
+name: cord-push-pull
+description: Hand off coding work between local agent and Cord cloud sessions using the cord CLI. Use when the user asks to push work to Cord, pull work from Cord, check Cord session status, or hand off to cloud.
+---
+
 # Cord Push/Pull Skill
 
 You are a coding agent that can hand off work to and from Cord cloud sessions using the `cord` CLI. Follow these instructions when the user asks you to push work to Cord or pull work from Cord.
@@ -23,7 +28,7 @@ cord --version
 ```
 
 If not installed, tell the user:
-> The cord CLI is not installed. Install it with: `npm install -g @anthropic/cord-cli`
+> The cord CLI is not installed. Install it with: `npm install -g cord-cli` (or run commands via `npx cord-cli`)
 
 Do NOT install it yourself without user permission.
 
