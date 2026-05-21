@@ -196,6 +196,21 @@ The CLI automatically finds the Cord session linked to your current git branch.
 
 ### Step 2: Handle the response
 
+`cord pull` may wait while Cord prepares the branch. This is expected. During preparation, Cord asks the cloud agent to inspect git status, finish any necessary work, commit, and push the branch before the handoff is returned.
+
+**If Cord is preparing the branch for local pull:**
+
+The CLI will output something like:
+
+```text
+Cord is preparing the branch for local pull
+The Cord session has unpublished work. Cord asked the agent to commit and push it before pull can complete.
+Git state: 0 staged · 2 unstaged · 0 untracked · 1 ahead · 0 behind
+Waiting for the agent to commit and push. Press Ctrl-C to stop waiting; rerun `cord pull` later.
+```
+
+Wait for it to finish. Do not run `git pull` until `cord pull` returns a successful handoff context. If the wait times out, tell the user Cord is still preparing and rerun `cord pull` later.
+
 **If the agent is still working:**
 
 The CLI will output something like:
@@ -232,6 +247,26 @@ Read the handoff context carefully and continue working from where Cord left off
 - The "What to do next" section
 - The "Gotchas" section
 - Any mentioned files or architectural decisions
+
+---
+
+## If you are running inside the Cord cloud session
+
+When Cord is doing the cloud side of the work, you are responsible for leaving the branch ready for a future `cord pull`.
+
+Before you say the work is done:
+
+1. Run `git status`.
+2. Review the diff and decide which project changes belong to the task.
+3. Stage and commit intended changes with a descriptive commit message.
+4. Push the current working branch to its remote/upstream:
+   ```bash
+   git push -u origin HEAD
+   ```
+5. If push fails because the branch is behind, safely pull/sync, resolve conflicts if needed, and push again.
+6. In your final response, clearly say what commit(s) you pushed, or explain exactly why you could not push.
+
+If the user runs `cord pull` while you have unpublished work, Cord may send you an explicit preparation instruction. Treat that as high priority: finish only the necessary current work, commit, push, and reply with a concise summary. Do not broaden scope just because a pull was requested.
 
 ---
 

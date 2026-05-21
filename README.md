@@ -8,7 +8,7 @@ This is a **skill** — an instruction set that any coding agent (Claude Code, C
 
 **Push:** You're done for the day. Your local agent commits, pushes, writes a handoff, and sends it to Cord. Cord picks up where you left off.
 
-**Pull:** Next morning. Your local agent pulls Cord's work — a handoff summary of what was done, what's next, and any gotchas. Then `git pull` to get the commits.
+**Pull:** Next morning. Your local agent runs `cord pull`. If Cord has unpublished work, Cord asks its cloud agent to finish, commit, and push first; once ready, your local agent receives a handoff summary and then runs `git pull` to get the commits.
 
 ## Installation
 
@@ -66,7 +66,7 @@ Write handoff context   →      cord push          →       Creates session
                                                           Checks out your branch
                                                           Starts working
 
-                               cord pull          ←       Commits + pushes
+                               cord pull          ←       Ensures branch is committed + pushed
 Read handoff context    ←                         ←       Writes handoff
 git pull               ←
 Continue working
