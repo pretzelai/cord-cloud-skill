@@ -51,7 +51,7 @@ This opens a browser for the user to log in (or sign up if they don't have an ac
 
 Use this when the user wants Cord to continue their work in the cloud.
 
-### Step 1: Ensure clean git state
+### Step 1: Ensure the branch is safe to hand off and git state is clean
 
 Check that the working tree is ready to hand off:
 
@@ -59,7 +59,14 @@ Check that the working tree is ready to hand off:
 git status
 ```
 
-**If on `main` or `master`:** Create a descriptive branch first.
+**Never push the base branch.** Do not assume it is named `main` or `master`; determine it first:
+
+```bash
+git symbolic-ref --quiet --short refs/remotes/origin/HEAD
+```
+
+This prints something like `origin/main` or `origin/staging`. If that fails, inspect the repository's default/base branch with `git remote show origin` or the hosting provider. If the current branch is the base branch, create a descriptive feature branch first:
+
 ```bash
 git checkout -b <descriptive-branch-name>
 ```
@@ -77,11 +84,13 @@ git push -u origin HEAD
 
 This is critical — Cord needs the branch to exist on GitHub to clone it.
 
-### Step 2: Write the handoff context
+### Step 2: Prepare the handoff context
 
-Create a temporary file with structured handoff context. This is the most important part — the quality of this context determines how well Cord can continue your work.
+Prepare structured handoff context. This is the most important part — the quality of this context determines how well Cord can continue your work.
 
-Write to a temp file (e.g., `/tmp/cord-handoff.md`):
+Before pushing, make sure there is obvious work left for Cord to do. If the task looks complete or the next step is ambiguous, stop and ask the user what Cord should do next instead of pushing a vague handoff.
+
+Use this structure:
 
 ```markdown
 ## What has been accomplished
@@ -111,11 +120,16 @@ Write to a temp file (e.g., `/tmp/cord-handoff.md`):
 - Mention things that aren't obvious from reading the code.
 - If there's a plan document or spec, reference it.
 - Keep it under 5000 words — concise beats comprehensive.
+- The "What to do next" section must contain concrete unfinished work. If you cannot write it clearly, ask the user.
 
 ### Step 3: Push to Cord
 
+Prefer piping the handoff directly so you do not create extra files:
+
 ```bash
-cord push --context-file /tmp/cord-handoff.md
+cat <<'EOF' | cord push --message "<short concrete next step>"
+<handoff context>
+EOF
 ```
 
 The CLI automatically detects your current branch and repository from git.
@@ -137,6 +151,12 @@ echo "Implement the auth flow as described in PLAN.md" | cord push
 cord push --context "Finish implementing the test suite for the API routes. All route handlers are done, just need tests."
 ```
 
+**Use a temp context file only if the handoff is too large or awkward to pipe.** If you do, delete it after the push.
+
+```bash
+cord push --context-file /tmp/cord-handoff.md --message "<short concrete next step>"
+```
+
 ### Step 4: Confirm success
 
 The CLI outputs:
@@ -148,7 +168,7 @@ Tell the user the push was successful and give them the session URL.
 
 ### After pushing
 
-Clean up the temp handoff file:
+If you created a temp handoff file, clean it up:
 ```bash
 rm /tmp/cord-handoff.md
 ```
@@ -182,7 +202,7 @@ The CLI will output something like:
 ```
 Agent is still working
 The Cord agent is currently active on this session.
-Check progress: https://app.runcord.com/session/abc123
+Check progress: https://app.runcord.com/<repo-id>/<session-id>
 Run `cord pull` again later or use `cord status` to check.
 ```
 
