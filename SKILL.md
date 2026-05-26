@@ -9,6 +9,24 @@ You are a coding agent that can hand off work to and from Cord cloud sessions us
 
 ---
 
+## Decision-making policy
+
+**Avoid asking the user clarifying questions while running this skill.** In most cases, make the best reasonable guess for every decision based on the context you already have (git state, repo contents, recent commits, conversation history, plan/spec files, file paths, error messages, etc.) and proceed.
+
+The only exceptions are the cases where a later section of this document explicitly says to ask the user — follow those instructions when they apply. Otherwise, default to inferring and proceeding.
+
+For all other judgement calls, default to making your best guess. Examples include but are not limited to:
+- The branch name to create when handing off from a base branch — infer one from the recent work or the user's instruction.
+- The commit message for uncommitted changes — synthesize one from the diff.
+- The handoff `--message` and "What to do next" content — infer concrete next steps from the current code state, TODOs, failing tests, unfinished functions, or recent conversation.
+- Whether to create a new session or resume an existing one — default to resuming if a session is already linked to the branch, otherwise create new.
+- Repository and branch detection — fall back to sensible defaults (`HEAD`, `origin`) before considering asking.
+- Whether to wait, retry, or proceed when the CLI reports the agent is busy — default to informing the user of the state and not blocking.
+
+When you make a non-obvious assumption, briefly state it in your final response so the user can correct it after the fact, but do not pause to confirm beforehand.
+
+---
+
 ## When to use this skill
 
 - User says: "push this to Cord", "let Cord continue", "hand off to cloud", "send to Cord"
